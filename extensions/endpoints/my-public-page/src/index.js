@@ -12,9 +12,6 @@ export default (router, { services }) => {
 				fields: ['artifact_id', 'title', 'filename', 'public_url', 'drone_id', 'timestamp'],
 			});
 
-			// Use the same token as in the module to have access to the files
-			//const token = 'vrNIDMzAge5Xd_XwyffjigeL_bUdbfVB';
-
 			const html = `
 <!DOCTYPE html>
 <html lang="en">

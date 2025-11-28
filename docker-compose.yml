@@ -10,16 +10,16 @@ services:
     environment:
       KEY: "your_directus_key"
       SECRET: "your_directus_secret"
-      ADMIN_EMAIL: ""
-      ADMIN_PASSWORD: ""
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       
       # PostgreSQL Configuration
       DB_CLIENT: "pg"
       DB_HOST: "postgres"
       DB_PORT: "5432"
-      DB_DATABASE: "mydb"
-      DB_USER: "admin"
-      DB_PASSWORD: "admin123"
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
       
       # Content Security Policy - Allow MinIO images
       CONTENT_SECURITY_POLICY_DIRECTIVES__IMG_SRC: "'self' data: blob: https://cdn.directus.io http://localhost:9000"
