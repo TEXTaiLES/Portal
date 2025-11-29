@@ -21,6 +21,10 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       
+      # Storage Configuration  
+      STORAGE_LOCATIONS: "local"
+      STORAGE_LOCAL_ROOT: "./uploads"
+      
       # Content Security Policy - Allow MinIO images
       CONTENT_SECURITY_POLICY_DIRECTIVES__IMG_SRC: "'self' data: blob: https://cdn.directus.io http://localhost:9000"
       

@@ -1,6 +1,6 @@
 {
-	"name": "my-public-page",
-	"description": "Please enter a description for your extension",
+	"name": "digital-textailes-archieve",
+	"description": "TEXTaiLES Digital Archive - Public 3D artifact viewer",
 	"icon": "extension",
 	"version": "1.0.0",
 	"keywords": [
@@ -16,7 +16,7 @@
 		"path": "dist/index.js",
 		"source": "src/index.js",
 		"host": "^9.22.0",
-		"id": "my-public-page"
+		"id": "digital-textailes-archieve"
 	},
 	"scripts": {
 		"build": "directus-extension build",
