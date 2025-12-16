@@ -1,8 +1,11 @@
 /* Hero Section */
 .hero-section {
-    background: url('/digital-textailes-archieve/static/Archieve_files/Hero/the-archeological-parc-of-pompeii-5-1.jpeg') center/cover no-repeat;
-    background-position: center;
-    color: white;
+    background: url('/digital-textailes-archieve/static/Archieve_files/Hero/Icon-Textailes-Colour-RGB-Ver.png') left center no-repeat,
+                url('/digital-textailes-archieve/static/Archieve_files/Hero/Icon-Textailes-Colour-RGB-Ver.png') right center no-repeat;
+    background-position:
+                        left -10px center,
+                        right -10px center;
+    color: rgb(254, 254, 254);
     padding: 80px 0;
     text-align: center;
     margin-bottom: 50px;

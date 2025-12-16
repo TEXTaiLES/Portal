@@ -16,7 +16,8 @@ export default (router, { services }) => {
             // Fetches artifact from database by ID
 			const costumes = await costumesService.readByQuery({
 				fields: [
-					'id', 'title', 'gltf_file', 'obj_file',
+					'id', 'title', 'gltf_file', 'obj_file', // e.g., "ben-uuid"
+					'obj_files.directus_files_id', // e.g., ["ben-uuid", "ben_ks-uuid"]
 					// Identification
 					'accession_number', 'reference_name_number', 'material_analyzed',
 					// Condition
@@ -37,6 +38,20 @@ export default (router, { services }) => {
 			}
 
 			const costume = costumes[0];
+
+			// Build asset URL with obj_files parameter if available
+			let modelUrl = '';
+			if (costume.gltf_file) {
+				modelUrl = `/digital-textailes-archieve/assets/${costume.gltf_file}`;
+			} else if (costume.obj_file) {
+				// Extract file IDs from obj_files relational field
+				const relatedFileIds = costume.obj_files?.map(f => f.directus_files_id).filter(Boolean) || []; // e.g., ["ben-uuid","ben_ks-uuid"]
+				if (relatedFileIds.length > 0) {
+					modelUrl = `/digital-textailes-archieve/assets/${costume.obj_file}?obj_files=${relatedFileIds.join(',')}`; // Result: "/assets/ben-uuid?obj_files=ben-uuid,ben_ks-uuid"
+				} else {
+					modelUrl = `/digital-textailes-archieve/assets/${costume.obj_file}`;
+				}
+			}
 
 			// Build ATON scene URL for this artifact
 			// The URL will be used by the "Annotate with THOTH" button
@@ -76,14 +91,16 @@ ${renderNavbar('collections')}
         <div class="col-12 col-lg-8">
             <div class="mt-3 mb-4">
                 <div id="costume-model" style="height: 555px;">
-                    <model-viewer 
-                        src="/digital-textailes-archieve/assets/${costume.gltf_file || costume.obj_file || ''}"
-                        alt="${costume.title || '3D Model'}"
-                        camera-controls 
-                        auto-rotate
-                        shadow-intensity="1"
-                        style="width: 100%; height: 100%;">
-                    </model-viewer>
+                   <model-viewer
+                     src="${modelUrl}"
+                     camera-controls
+                     auto-rotate
+                     environment-image="neutral"
+                     exposure="0.7"
+                     shadow-intensity="3"
+                     tone-mapping="neutral"
+                     style="width:100%; height:100%;">
+                   </model-viewer>
                 </div>
             </div>
 

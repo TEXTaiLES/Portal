@@ -45,7 +45,7 @@ export default (router) => {
 					`<div><a href="${link.url}" class="text-decoration-none text-primary small">${link.label}</a></div>`
 				).join('');
 				
-                // Returns HTML card for this tool
+                // Return HTML card for this tool
 				return `
 					<div class="col-md-6 mb-3">
 						<div class="card">
@@ -70,11 +70,10 @@ export default (router) => {
 ${renderNavbar('toolbox')}
 
 <!-- Hero Section -->
-<div class="hero-section" style="background: url('/digital-textailes-archieve/static/Archieve_files/Hero/the-archeological-parc-of-pompeii-5-1.jpeg') center/cover no-repeat; position: relative; color: white; padding: 60px 0; text-align: center; margin-bottom: 40px;">
-    <div style="content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.4); z-index: 1;"></div>
-    <div class="container" style="position: relative; z-index: 2;">
-        <h1 style="font-size: 2.5rem; font-weight: bold; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">Digital Toolbox</h1>
-        <p style="font-size: 1.2rem; opacity: 0.95; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);">Our Tools for Cultural Heritage</p>
+<div class="hero-section">
+    <div class="container">
+        <h1>Digital Toolbox</h1>
+        <p>Our Tools for Cultural Heritage</p>
     </div>
 </div>
 

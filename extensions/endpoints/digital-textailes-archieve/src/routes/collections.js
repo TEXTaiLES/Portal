@@ -27,11 +27,12 @@ export default (router, { services }) => {
 
 	// Fetches all costumes from database
 	const allCostumes = await costumesService.readByQuery({
-		fields: ['id', 'title', 'gltf_file', 'obj_file', 'use_case', 'collection', 'source', 'time_period'],
+		fields: ['id', 'title', 'gltf_file', 'obj_file', 'obj_files', 'use_case', 'collection', 'source', 'time_period'],
 		limit: -1
 	});
 
-	// Extract use case number
+	// Extract use case number (e.g., from "1. Greek Ancient Textiles" get "1")
+	// Since costume.use_case only contains numbers, we just extract the digit
 	const useCaseNumber = usecase !== 'all' ? usecase.match(/\d+/)?.[0] : null;
 	
 	// Filter costumes based on selected use case
@@ -47,7 +48,7 @@ export default (router, { services }) => {
 							<div class="card h-100">
 								<div style="height: 200px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
 									${c.gltf_file || c.obj_file ? `<model-viewer 
-										src="/digital-textailes-archieve/assets/${c.gltf_file || c.obj_file}"
+										src="/digital-textailes-archieve/assets/${c.gltf_file || c.obj_file}${c.obj_file && c.obj_files ? '?obj_files=' + c.obj_files : ''}"
 										alt="${c.title || '3D Model'}"
 										auto-rotate
 										camera-controls
@@ -101,11 +102,10 @@ const useCaseMenu = USE_CASES.map(uc => {
 ${renderNavbar('collections')}
 
 <!-- Hero Section -->
-<div class="hero-section" style="background: url('/digital-textailes-archieve/static/Archieve_files/Hero/the-archeological-parc-of-pompeii-5-1.jpeg') center/cover no-repeat; position: relative; color: white; padding: 60px 0; text-align: center; margin-bottom: 40px;">
-    <div style="content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.4); z-index: 1;"></div>
-    <div class="container" style="position: relative; z-index: 2;">
-        <h1 style="font-size: 2.5rem; font-weight: bold; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">Collections</h1>
-        <p style="font-size: 1.2rem; opacity: 0.95; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);">Explore Our Cultural Heritage Archives</p>
+<div class="hero-section">
+    <div class="container">
+        <h1>Collections</h1>
+        <p>Explore Our Cultural Heritage Archives</p>
     </div>
 </div>
 

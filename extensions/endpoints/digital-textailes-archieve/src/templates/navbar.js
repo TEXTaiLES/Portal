@@ -7,6 +7,9 @@ export const renderNavbar = (activePage = 'home') => {
     <div class="container">
         <div class="row">
             <div class="col-12 text-end">
+                <a href="https://github.com/TEXTaiLES" target="_blank" style="color: #ffffff; margin: 0 8px; text-decoration: none;">
+                    <i class="fab fa-github" style="font-size: 20px;"></i>
+                </a>
                 <a href="https://www.linkedin.com/company/textailes" target="_blank" style="color: #ffffff; margin: 0 8px; text-decoration: none;">
                     <i class="fab fa-linkedin" style="font-size: 20px;"></i>
                 </a>
