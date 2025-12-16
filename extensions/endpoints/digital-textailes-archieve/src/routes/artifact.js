@@ -170,7 +170,7 @@ ${renderNavbar('collections')}
                         <div class="col-md-6">
                             <dl>
                                 <dt class="samewidth">Reference Name/Number:</dt>
-                                <dd>${costume.reference_name_number || 'N/A'}</dd>
+                                <dd>${costume.reference_namenumber || 'N/A'}</dd>
                                 
                                 <dt class="samewidth">Material Analyzed:</dt>
                                 <dd>${costume.material_analyzed || 'N/A'}</dd>
@@ -283,9 +283,6 @@ ${renderNavbar('collections')}
                                 
                                 <dt class="samewidth">Location:</dt>
                                 <dd>${costume.location || 'N/A'}</dd>
-                                
-                                <dt class="samewidth">Source:</dt>
-                                <dd>${costume.source || 'N/A'}</dd>
                             </dl>
                         </div>
                     </div>
