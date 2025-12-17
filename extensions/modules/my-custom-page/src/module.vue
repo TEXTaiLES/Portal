@@ -1,20 +1,20 @@
 <template>
-	<private-view title="Costumes Gallery">
-		<div v-if="loading" class="loading">Loading costumes...</div>
+	<private-view title="Heritage Assets Gallery">
+		<div v-if="loading" class="loading">Loading heritage assets...</div>
 		
-		<div v-else class="costumes-grid">
-			<div v-for="costume in costumes" :key="costume.id" class="costume-card">
-				<h3>{{ costume.title || 'Untitled' }}</h3>
+		<div v-else class="heritage-assets-grid">
+			<div v-for="asset in heritageAssets" :key="asset.id" class="heritage-asset-card">et-card">
+				<h3>{{ asset.title || 'Untitled' }}</h3>
 				
 				<!-- Display Image -->
-				<div v-if="costume.image_file" class="image-container">
-					<img :src="getAssetUrl(costume.image_file)" :alt="costume.title" />
+				<div v-if="asset.image_file" class="image-container">
+					<img :src="getAssetUrl(asset.image_file)" :alt="asset.title" />
 				</div>
 				
 				<!-- Display 3D Model - TODO: Fix CSP issue to enable model-viewer -->
-				<!-- <div v-if="costume.gltf_file" class="model-container">
+				<!-- <div v-if="asset.gltf_file" class="model-container">
 					<model-viewer 
-						:src="getAssetUrl(costume.gltf_file)"
+						:src="getAssetUrl(asset.gltf_file)"
 						camera-controls 
 						auto-rotate
 						shadow-intensity="1"
@@ -37,7 +37,7 @@ export default {
 	},
 	data() {
 		return {
-			costumes: [],
+			heritageAssets: [],
 			loading: true,
 		};
 	},
@@ -48,19 +48,19 @@ export default {
 		// script.src = 'https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js';
 		// document.head.appendChild(script);
 		
-		await this.loadCostumes();
+		await this.loadHeritageAssets();
 	},
 	methods: {
-		async loadCostumes() {
+		async loadHeritageAssets() {
 			try {
-				const response = await this.api.get('/items/Costumes', {
+				const response = await this.api.get('/items/heritage_assets', {
 					params: {
 						fields: ['id', 'title', 'image_file', 'gltf_file']
 					}
 				});
-				this.costumes = response.data.data;
+				this.heritageAssets = response.data.data;
 			} catch (error) {
-				console.error('Error loading costumes:', error);
+				console.error('Error loading heritage assets:', error);
 			} finally {
 				this.loading = false;
 			}
@@ -81,14 +81,14 @@ export default {
 	font-size: 18px;
 }
 
-.costumes-grid {
+.heritage-assets-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
 	gap: 20px;
 	padding: 20px;
 }
 
-.costume-card {
+.heritage-asset-card {
 	border: 1px solid #ddd;
 	border-radius: 8px;
 	padding: 10px;

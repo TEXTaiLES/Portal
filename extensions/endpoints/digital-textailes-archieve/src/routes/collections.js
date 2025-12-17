@@ -20,29 +20,29 @@ export default (router, { services }) => {
 			}
 
     // Connects to Directus database
-	const costumesService = new ItemsService('costumes', {
+	const heritageAssetsService = new ItemsService('heritage_assets', {
 		schema: req.schema,
 		accountability: null,
 	});
 
-	// Fetches all costumes from database
-	const allCostumes = await costumesService.readByQuery({
+	// Fetches all heritage assets from database
+	const allHeritageAssets = await heritageAssetsService.readByQuery({
 		fields: ['id', 'title', 'gltf_file', 'obj_file', 'obj_files', 'use_case', 'collection', 'source', 'time_period'],
 		limit: -1
 	});
 
 	// Extract use case number (e.g., from "1. Greek Ancient Textiles" get "1")
-	// Since costume.use_case only contains numbers, we just extract the digit
+	// Since heritageAsset.use_case only contains numbers, we just extract the digit
 	const useCaseNumber = usecase !== 'all' ? usecase.match(/\d+/)?.[0] : null;
 	
-	// Filter costumes based on selected use case
-	const filteredCostumes = usecase === 'all' 
-		? allCostumes 
-		: allCostumes.filter(c => matchesByUseCase(c, usecase, useCaseNumber));
+	// Filter heritage assets based on selected use case
+	const filteredHeritageAssets = usecase === 'all' 
+		? allHeritageAssets 
+		: allHeritageAssets.filter(c => matchesByUseCase(c, usecase, useCaseNumber));
 
-    // Generates HTML for each costume card
-	const costumesHtml = filteredCostumes.length
-				? filteredCostumes.map(c => `
+    // Generates HTML for each heritage asset card
+	const heritageAssetsHtml = filteredHeritageAssets.length
+				? filteredHeritageAssets.map(c => `
 					<div class="col-md-4 col-sm-6 mb-4">
 						<a href="/digital-textailes-archieve/artifact/${c.id}" class="text-decoration-none">
 							<div class="card h-100">
@@ -57,7 +57,7 @@ export default (router, { services }) => {
 								</div>
 								<div class="card-body">
 					<h6 class="card-title">${c.title || 'Untitled'}</h6>
-					<span class="badge mb-2" style="color: #265d72;">Costume</span>
+					<span class="badge mb-2" style="color: #265d72;">Heritage Asset</span>
 					${c.use_case ? `<p class="text-muted small mb-1">Use Case ${c.use_case}</p>` : ''}
 					<small class="text-muted">${c.collection || ''} ${c.time_period ? '• ' + c.time_period : ''}</small>
 				</div>
@@ -68,8 +68,8 @@ export default (router, { services }) => {
 	: '';
 
 // Handles empty results (no artifacts match the filter)
-const allItemsHtml = costumesHtml 
-	? costumesHtml
+const allItemsHtml = heritageAssetsHtml 
+	? heritageAssetsHtml
 	: '<div class="col-12"><p class="text-muted">No artifacts found for this use case</p></div>';
 
 // Generates grid of 8 use case cards
@@ -81,8 +81,8 @@ const useCaseMenu = USE_CASES.map(uc => {
 					: `/digital-textailes-archieve/collections/use-case-${useCaseNumber}`;
 				
 			const count = uc.key === 'all' 
-				? allCostumes.length
-				: allCostumes.filter(c => matchesByUseCase(c, uc.key, useCaseNumber)).length;				const imageUrl = `/digital-textailes-archieve/static/Archieve_files/${uc.image}`;
+				? allHeritageAssets.length
+				: allHeritageAssets.filter(c => matchesByUseCase(c, uc.key, useCaseNumber)).length;				const imageUrl = `/digital-textailes-archieve/static/Archieve_files/${uc.image}`;
 				
 				return `
 					<div class="col-md-4 col-sm-6 mb-3">
@@ -119,7 +119,7 @@ ${renderNavbar('collections')}
 				</div>
 			` : `
 				<h2>${usecase === 'all' ? 'All Use Cases' : (USE_CASES.find(uc => uc.key === usecase.toLowerCase())?.label || usecase.toUpperCase())}</h2>
-				<p class="text-muted">${filteredCostumes.length} artifact(s) found</p>
+				<p class="text-muted">${filteredHeritageAssets.length} artifact(s) found</p>
 				<div class="row mt-4">
 					${allItemsHtml}
 				</div>

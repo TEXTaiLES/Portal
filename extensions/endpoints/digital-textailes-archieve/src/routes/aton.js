@@ -24,23 +24,23 @@ export default (router, { services }) => {
 	 */
 	router.post('/aton/scene/:artifactId', async (req, res) => {
 		try {
-			const costumesService = new ItemsService('costumes', {
+			const heritageAssetsService = new ItemsService('heritage_assets', {
 				schema: req.schema,
 				accountability: null,
 			});
 
-			const costumes = await costumesService.readByQuery({
+			const heritageAssets = await heritageAssetsService.readByQuery({
 				fields: ['id', 'title', 'gltf_file', 'obj_file', 'obj_files.directus_files_id'],
 				filter: { id: { _eq: req.params.artifactId } },
 				limit: 1
 			});
 
-			if (!costumes || costumes.length === 0) {
+			if (!heritageAssets || heritageAssets.length === 0) {
 				return res.status(404).json({ error: 'Artifact not found' });
 			}
 
-			const costume = costumes[0];
-			const modelFile = costume.gltf_file || costume.obj_file;
+			const heritageAsset = heritageAssets[0];
+			const modelFile = heritageAsset.gltf_file || heritageAsset.obj_file;
 			
 			if (!modelFile) {
 				return res.status(400).json({ error: 'No 3D model available for this artifact' });
@@ -48,23 +48,23 @@ export default (router, { services }) => {
 
 			// Construct the full URL to the model
 			const baseUrl = `${req.protocol}://${req.get('host')}`;
-			const relatedFileIds = costume.obj_files?.map(f => f.directus_files_id).filter(Boolean) || [];
+			const relatedFileIds = heritageAsset.obj_files?.map(f => f.directus_files_id).filter(Boolean) || [];
 			let modelUrl = `${baseUrl}/digital-textailes-archieve/assets/${modelFile}`;
-			if (costume.obj_file && relatedFileIds.length > 0) {
+			if (heritageAsset.obj_file && relatedFileIds.length > 0) {
 				modelUrl += `?obj_files=${relatedFileIds.join(',')}`;
 			}
 
 			// Call ATON API v2 to create the scene
 			const sceneData = await createAtonScene(
-				costume.id,
-				costume.title,
+				heritageAsset.id,
+				heritageAsset.title,
 				modelUrl
 			);
 
 			res.json({
 				...sceneData,
-				artifactId: costume.id,
-				artifactTitle: costume.title,
+				artifactId: heritageAsset.id,
+				artifactTitle: heritageAsset.title,
 				modelUrl: modelUrl
 			});
 
@@ -151,23 +151,23 @@ export default (router, { services }) => {
 	router.get('/aton/scene/:artifactId/url', async (req, res) => {
 		try {
 			// Get artifact data from Directus database
-			const costumesService = new ItemsService('costumes', {
+			const heritageAssetsService = new ItemsService('heritage_assets', {
 				schema: req.schema,
 				accountability: null,
 			});
 
-			const costumes = await costumesService.readByQuery({
+			const heritageAssets = await heritageAssetsService.readByQuery({
 				fields: ['id', 'title', 'gltf_file', 'obj_file', 'obj_files.directus_files_id'],
 				filter: { id: { _eq: req.params.artifactId } },
 				limit: 1
 			});
 
-			if (!costumes || costumes.length === 0) {
+			if (!heritageAssets || heritageAssets.length === 0) {
 				return res.status(404).json({ error: 'Artifact not found' });
 			}
 
-			const costume = costumes[0];
-			const sceneId = `artifact_${costume.id}`;
+			const heritageAsset = heritageAssets[0];
+			const sceneId = `artifact_${heritageAsset.id}`;
 			const user = req.query.user || ATON_CONFIG.DEFAULT_USER;
 
 			// Step 1: Try to get existing scene from ATON
@@ -175,26 +175,26 @@ export default (router, { services }) => {
 
 			// Step 2: If scene doesn't exist in ATON, create it
 			if (!sceneData) {
-				const modelFile = costume.gltf_file || costume.obj_file;
+				const modelFile = heritageAsset.gltf_file || heritageAsset.obj_file;
 				
 				if (!modelFile) {
 					return res.status(400).json({ error: 'No 3D model available' });
 				}
 
 				const baseUrl = `${req.protocol}://${req.get('host')}`;
-				const relatedFileIds = costume.obj_files?.map(f => f.directus_files_id).filter(Boolean) || [];
+				const relatedFileIds = heritageAsset.obj_files?.map(f => f.directus_files_id).filter(Boolean) || [];
 				let modelUrl = `${baseUrl}/digital-textailes-archieve/assets/${modelFile}`;
-				if (costume.obj_file && relatedFileIds.length > 0) {
+				if (heritageAsset.obj_file && relatedFileIds.length > 0) {
 					modelUrl += `?obj_files=${relatedFileIds.join(',')}`;
 				}
 
-				sceneData = await createAtonScene(costume.id, costume.title, modelUrl);
+				sceneData = await createAtonScene(heritageAsset.id, heritageAsset.title, modelUrl);
 			}
 
 			res.json({
 				...sceneData,
-				artifactId: costume.id,
-				artifactTitle: costume.title
+				artifactId: heritageAsset.id,
+				artifactTitle: heritageAsset.title
 			});
 
 		} catch (error) {

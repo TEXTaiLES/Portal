@@ -8,16 +8,21 @@ export default (router, { services }) => {
 
 	router.get('/artifact/:id', async (req, res) => {
 		try {
-			const costumesService = new ItemsService('costumes', {
+			const heritageAssetsService = new ItemsService('heritage_assets', {
 				schema: req.schema,
 				accountability: null,
 			});
 
             // Fetches artifact from database by ID
-			const costumes = await costumesService.readByQuery({
+			const heritageAssets = await heritageAssetsService.readByQuery({
 				fields: [
 					'id', 'title', 'gltf_file', 'obj_file', // e.g., "ben-uuid"
 					'obj_files.directus_files_id', // e.g., ["ben-uuid", "ben_ks-uuid"]
+					// Heritage Asset fields
+					'description', 'date_timespan', 'dimensions', 'heritage_asset_owner', 
+					'category_of_textile', 'keywords', 'inventory_number', 'origin',
+					// Digital Asset fields
+					'digitization_methods', 'digitization_actor', 'resolution',
 					// Identification
 					'accession_number', 'reference_name_number', 'material_analyzed',
 					// Condition
@@ -33,29 +38,29 @@ export default (router, { services }) => {
 				limit: 1
 			});
 
-			if (!costumes || costumes.length === 0) {
+			if (!heritageAssets || heritageAssets.length === 0) {
 				return res.status(404).send('Artifact not found');
 			}
 
-			const costume = costumes[0];
+			const heritageAsset = heritageAssets[0];
 
 			// Build asset URL with obj_files parameter if available
 			let modelUrl = '';
-			if (costume.gltf_file) {
-				modelUrl = `/digital-textailes-archieve/assets/${costume.gltf_file}`;
-			} else if (costume.obj_file) {
+			if (heritageAsset.gltf_file) {
+				modelUrl = `/digital-textailes-archieve/assets/${heritageAsset.gltf_file}`;
+			} else if (heritageAsset.obj_file) {
 				// Extract file IDs from obj_files relational field
-				const relatedFileIds = costume.obj_files?.map(f => f.directus_files_id).filter(Boolean) || []; // e.g., ["ben-uuid","ben_ks-uuid"]
+				const relatedFileIds = heritageAsset.obj_files?.map(f => f.directus_files_id).filter(Boolean) || []; // e.g., ["ben-uuid","ben_ks-uuid"]
 				if (relatedFileIds.length > 0) {
-					modelUrl = `/digital-textailes-archieve/assets/${costume.obj_file}?obj_files=${relatedFileIds.join(',')}`; // Result: "/assets/ben-uuid?obj_files=ben-uuid,ben_ks-uuid"
+					modelUrl = `/digital-textailes-archieve/assets/${heritageAsset.obj_file}?obj_files=${relatedFileIds.join(',')}`; // Result: "/assets/ben-uuid?obj_files=ben-uuid,ben_ks-uuid"
 				} else {
-					modelUrl = `/digital-textailes-archieve/assets/${costume.obj_file}`;
+					modelUrl = `/digital-textailes-archieve/assets/${heritageAsset.obj_file}`;
 				}
 			}
 
 			// Build ATON scene URL for this artifact
 			// The URL will be used by the "Annotate with THOTH" button
-			const sceneId = `artifact_${costume.id}`;
+			const sceneId = `artifact_${heritageAsset.id}`;
 			let atonSceneUrl = `${ATON_CONFIG.BASE_URL}${ATON_CONFIG.THOTH_PATH}?s=${sceneId}`;
 			
 			// Try to check if scene exists in ATON (optional - will use URL anyway)
@@ -80,7 +85,7 @@ ${renderNavbar('collections')}
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="https://textailes-eccch.eu/">Home</a></li>
                     <li class="breadcrumb-item"><a href="/digital-textailes-archieve/collections">Collections</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">${costume.title || 'Artifact'}</li>
+                    <li class="breadcrumb-item active" aria-current="page">${heritageAsset.title || 'Artifact'}</li>
                 </ol>
             </nav>
         </div>
@@ -90,7 +95,7 @@ ${renderNavbar('collections')}
         <div class="col-0 col-lg-2"></div>
         <div class="col-12 col-lg-8">
             <div class="mt-3 mb-4">
-                <div id="costume-model" style="height: 555px;">
+                <div id="heritageAsset-model" style="height: 555px;">
                    <model-viewer
                      src="${modelUrl}"
                      camera-controls
@@ -107,7 +112,7 @@ ${renderNavbar('collections')}
             <div class="row mt-4">
                 <div class="col-12 text-end mb-3">
                     <div class="feature-card" style="display: inline-block;">
-                        <button onclick="annotateWithThoth(${costume.id})" class="btn btn-primary">
+                        <button onclick="annotateWithThoth(${heritageAsset.id})" class="btn btn-primary">
                             <i class="fas fa-edit"></i> Annotate with THOTH
                         </button>
                     </div>
@@ -156,34 +161,34 @@ ${renderNavbar('collections')}
                 <div class="col-12 mb-4">
                     <h4 class="border-bottom pb-2">Heritage Asset</h4>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-12">
                             <dl>
                                 <dt class="samewidth">Title:</dt>
-                                <dd>${costume.title || 'N/A'}</dd>
+                                <dd>${heritageAsset.title || 'N/A'}</dd>
                                 
                                 <dt class="samewidth">Description:</dt>
-                                <dd>${costume.description || 'N/A'}</dd>
+                                <dd>${heritageAsset.description || 'N/A'}</dd>
                                 
                                 <dt class="samewidth">Date - Timespan:</dt>
-                                <dd>${costume.date_timespan || 'N/A'}</dd>
+                                <dd>${heritageAsset.date_timespan || 'N/A'}</dd>
 
                                 <dt class="samewidth">Dimensions:</dt>
-                                <dd>${costume.dimensions || 'N/A'}</dd>
+                                <dd>${heritageAsset.dimensions || 'N/A'}</dd>
 
                                 <dt class="samewidth">Heritage Asset Owner:</dt>
-                                <dd>${costume.heritage_asset_owner || 'N/A'}</dd>
+                                <dd>${heritageAsset.heritage_asset_owner || 'N/A'}</dd>
 
                                 <dt class="samewidth">Category of Textile:</dt>
-                                <dd>${costume.category_of_textile || 'N/A'}</dd>
+                                <dd>${heritageAsset.category_of_textile || 'N/A'}</dd>
 
                                 <dt class="samewidth">Keywords:</dt>
-                                <dd>${costume.keywords || 'N/A'}</dd>
+                                <dd>${heritageAsset.keywords || 'N/A'}</dd>
 
                                 <dt class="samewidth">Inventory Number:</dt>
-                                <dd>${costume.inventory_number || 'N/A'}</dd>
+                                <dd>${heritageAsset.inventory_number || 'N/A'}</dd>
 
                                 <dt class="samewidth">Origin:</dt>
-                                <dd>${costume.origin || 'N/A'}</dd>
+                                <dd>${heritageAsset.origin || 'N/A'}</dd>
                             </dl>
                         </div>
                     </div>
@@ -193,16 +198,16 @@ ${renderNavbar('collections')}
                 <div class="col-12 mb-4">
                     <h4 class="border-bottom pb-2">Digital Asset</h4>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-12">
                             <dl>
                                 <dt class="samewidth">Digitization methods:</dt>
-                                <dd>${costume.digitization_methods || 'N/A'}</dd>
+                                <dd>${heritageAsset.digitization_methods || 'N/A'}</dd>
                                 
                                 <dt class="samewidth">Digitization Actor:</dt>
-                                <dd>${costume.digitization_actor || 'N/A'}</dd>
+                                <dd>${heritageAsset.digitization_actor || 'N/A'}</dd>
                                 
                                 <dt class="samewidth">Resolution:</dt>
-                                <dd>${costume.resolution || 'N/A'}</dd>
+                                <dd>${heritageAsset.resolution || 'N/A'}</dd>
                             </dl>
                         </div>
                     </div>
@@ -232,22 +237,22 @@ ${renderNavbar('collections')}
                         <div class="col-md-6">
                             <dl>
                                 <dt class="samewidth">Title:</dt>
-                                <dd>${costume.title || 'N/A'}</dd>
+                                <dd>${heritageAsset.title || 'N/A'}</dd>
                                 
                                 <dt class="samewidth">ID:</dt>
-                                <dd>${costume.id || 'N/A'}</dd>
+                                <dd>${heritageAsset.id || 'N/A'}</dd>
                                 
                                 <dt class="samewidth">Accession Number:</dt>
-                                <dd>${costume.accession_number || 'N/A'}</dd>
+                                <dd>${heritageAsset.accession_number || 'N/A'}</dd>
                             </dl>
                         </div>
                         <div class="col-md-6">
                             <dl>
                                 <dt class="samewidth">Reference Name/Number:</dt>
-                                <dd>${costume.reference_namenumber || 'N/A'}</dd>
+                                <dd>${heritageAsset.reference_namenumber || 'N/A'}</dd>
                                 
                                 <dt class="samewidth">Material Analyzed:</dt>
-                                <dd>${costume.material_analyzed || 'N/A'}</dd>
+                                <dd>${heritageAsset.material_analyzed || 'N/A'}</dd>
                             </dl>
                         </div>
                     </div>
@@ -260,19 +265,19 @@ ${renderNavbar('collections')}
                         <div class="col-md-6">
                             <dl>
                                 <dt class="samewidth">Object Status:</dt>
-                                <dd>${costume.object_status || 'N/A'}</dd>
+                                <dd>${heritageAsset.object_status || 'N/A'}</dd>
                                 
                                 <dt class="samewidth">Condition Assessment:</dt>
-                                <dd>${costume.condition_assessment || 'N/A'}</dd>
+                                <dd>${heritageAsset.condition_assessment || 'N/A'}</dd>
                             </dl>
                         </div>
                         <div class="col-md-6">
                             <dl>
                                 <dt class="samewidth">State of Preservation:</dt>
-                                <dd>${costume.state_of_preservation || 'N/A'}</dd>
+                                <dd>${heritageAsset.state_of_preservation || 'N/A'}</dd>
                                 
                                 <dt class="samewidth">Type of Preservation:</dt>
-                                <dd>${costume.type_of_preservation || 'N/A'}</dd>
+                                <dd>${heritageAsset.type_of_preservation || 'N/A'}</dd>
                             </dl>
                         </div>
                     </div>
@@ -285,22 +290,22 @@ ${renderNavbar('collections')}
                         <div class="col-md-6">
                             <dl>
                                 <dt class="samewidth">Temperature:</dt>
-                                <dd>${costume.temperature ? costume.temperature + '°C' : 'N/A'}</dd>
+                                <dd>${heritageAsset.temperature ? heritageAsset.temperature + '°C' : 'N/A'}</dd>
                                 
                                 <dt class="samewidth">Humidity:</dt>
-                                <dd>${costume.humidity ? costume.humidity + '% RH' : 'N/A'}</dd>
+                                <dd>${heritageAsset.humidity ? heritageAsset.humidity + '% RH' : 'N/A'}</dd>
                                 
                                 <dt class="samewidth">Type of Container:</dt>
-                                <dd>${costume.type_of_container || 'N/A'}</dd>
+                                <dd>${heritageAsset.type_of_container || 'N/A'}</dd>
                             </dl>
                         </div>
                         <div class="col-md-6">
                             <dl>
                                 <dt class="samewidth">Mount:</dt>
-                                <dd>${costume.mount || 'N/A'}</dd>
+                                <dd>${heritageAsset.mount || 'N/A'}</dd>
                                 
                                 <dt class="samewidth">Result:</dt>
-                                <dd>${costume.result ? `<a href="${costume.result}" target="_blank">View</a>` : 'N/A'}</dd>
+                                <dd>${heritageAsset.result ? `<a href="${heritageAsset.result}" target="_blank">View</a>` : 'N/A'}</dd>
                             </dl>
                         </div>
                     </div>
@@ -313,19 +318,19 @@ ${renderNavbar('collections')}
                         <div class="col-md-6">
                             <dl>
                                 <dt class="samewidth">Conservation Date:</dt>
-                                <dd>${costume.conservation_date || 'N/A'}</dd>
+                                <dd>${heritageAsset.conservation_date || 'N/A'}</dd>
                                 
                                 <dt class="samewidth">Cleaning:</dt>
-                                <dd>${costume.cleaning === true ? 'Yes' : costume.cleaning === false ? 'No' : 'N/A'}</dd>
+                                <dd>${heritageAsset.cleaning === true ? 'Yes' : heritageAsset.cleaning === false ? 'No' : 'N/A'}</dd>
                             </dl>
                         </div>
                         <div class="col-md-6">
                             <dl>
                                 <dt class="samewidth">Foreign Material Introduced:</dt>
-                                <dd>${costume.introduction_of_foreign_material || 'N/A'}</dd>
+                                <dd>${heritageAsset.introduction_of_foreign_material || 'N/A'}</dd>
                                 
                                 <dt class="samewidth">Specific Foreign Material:</dt>
-                                <dd>${costume.specific_foreign_material_introduce || 'N/A'}</dd>
+                                <dd>${heritageAsset.specific_foreign_material_introduce || 'N/A'}</dd>
                             </dl>
                         </div>
                     </div>
@@ -338,25 +343,25 @@ ${renderNavbar('collections')}
                         <div class="col-md-6">
                             <dl>
                                 <dt class="samewidth">Use Case:</dt>
-                                <dd>${costume.use_case || 'N/A'}</dd>
+                                <dd>${heritageAsset.use_case || 'N/A'}</dd>
                                 
                                 <dt class="samewidth">Collection:</dt>
-                                <dd>${costume.collection || 'N/A'}</dd>
+                                <dd>${heritageAsset.collection || 'N/A'}</dd>
                                 
                                 <dt class="samewidth">Time Period:</dt>
-                                <dd>${costume.time_period || 'N/A'}</dd>
+                                <dd>${heritageAsset.time_period || 'N/A'}</dd>
                             </dl>
                         </div>
                         <div class="col-md-6">
                             <dl>
                                 <dt class="samewidth">Creator:</dt>
-                                <dd>${costume.creator || 'N/A'}</dd>
+                                <dd>${heritageAsset.creator || 'N/A'}</dd>
                                 
                                 <dt class="samewidth">Sensor:</dt>
-                                <dd>${costume.sensor || 'N/A'}</dd>
+                                <dd>${heritageAsset.sensor || 'N/A'}</dd>
                                 
                                 <dt class="samewidth">Location:</dt>
-                                <dd>${costume.location || 'N/A'}</dd>
+                                <dd>${heritageAsset.location || 'N/A'}</dd>
                             </dl>
                         </div>
                     </div>
@@ -374,10 +379,10 @@ ${renderNavbar('collections')}
 ${renderFooter()}`;
 
 			const html = renderHtmlPage({
-				title: `${costume.title || 'Artifact'} - Digital Textailes Archive`,
+				title: `${heritageAsset.title || 'Artifact'} - Digital Textailes Archive`,
 				content,
 				includeModelViewer: true,
-				bodyClass: 'id="costume" tabindex="0"',
+				bodyClass: 'id="heritageAsset" tabindex="0"',
 				cspPolicy: CSP_POLICY
 			});
 

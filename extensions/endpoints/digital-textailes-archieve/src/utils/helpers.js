@@ -43,11 +43,11 @@ export const mapGltfUris = async (gltf, filesService) => {
 };
 
 // Helper: Match artifacts by use case
-export const matchesByUseCase = (costume, usecase, useCaseNumber) => {
-	// Direct number match (costume.use_case is "1", "2", "3", etc.)
-	const matchByNumber = useCaseNumber && costume.use_case && costume.use_case.toString() === useCaseNumber.toString();
+export const matchesByUseCase = (heritageAsset, usecase, useCaseNumber) => {
+	// Direct number match (heritageAsset.use_case is "1", "2", "3", etc.)
+	const matchByNumber = useCaseNumber && heritageAsset.use_case && heritageAsset.use_case.toString() === useCaseNumber.toString();
 	// Title contains use case number (e.g., "1. Greek Ancient Textiles")
-	const matchByTitle = useCaseNumber && costume.title && costume.title.includes(useCaseNumber + '.');
+	const matchByTitle = useCaseNumber && heritageAsset.title && heritageAsset.title.includes(useCaseNumber + '.');
 	return matchByNumber || matchByTitle;
 };
 

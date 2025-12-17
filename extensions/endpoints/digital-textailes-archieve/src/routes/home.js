@@ -6,21 +6,21 @@ export default (router, { services }) => {
 	const { ItemsService } = services;
 
 	router.get('/', async (req, res) => {
-		const costumesService = new ItemsService('costumes', {
+		const heritageAssetsService = new ItemsService('heritage_assets', {
 			schema: req.schema,
 			accountability: null,
 		});
 
 		try {
 			// Get total artifact count and a featured artifact
-			const allCostumes = await costumesService.readByQuery({
+			const allHeritageAssets = await heritageAssetsService.readByQuery({
 				fields: ['id', 'title', 'gltf_file', 'obj_file'],
 				limit: -1
 			});
-			const totalArtifacts = allCostumes.length;
+			const totalArtifacts = allHeritageAssets.length;
 			
 			// Get a featured artifact (you can change the ID or make it random)
-			const featuredCostume = allCostumes[0] || {};
+			const featuredHeritageAsset = allHeritageAssets[0] || {};
 
 			const html = `<!DOCTYPE html>
 <html lang="en" dir="ltr" data-bs-theme="light">
@@ -91,7 +91,7 @@ ${renderNavbar('home')}
                     <h3 class="text-center">Featured Artifact</h3>
                     <div class="model-viewer-container">
                         <model-viewer 
-                            src="/digital-textailes-archieve/assets/${featuredCostume.gltf_file || featuredCostume.obj_file || ''}"
+                            src="/digital-textailes-archieve/assets/${featuredHeritageAsset.gltf_file || featuredHeritageAsset.obj_file || ''}"
                             alt="Featured Artifact"
                             auto-rotate
                             camera-controls
@@ -99,8 +99,8 @@ ${renderNavbar('home')}
                         </model-viewer>
                     </div>
                     <div class="text-center mt-3">
-                        <p class="mb-2"><strong>${featuredCostume.title || 'Explore our collection'}</strong></p>
-                        <a href="/digital-textailes-archieve/artifact/${featuredCostume.id || '1'}" class="btn btn-primary btn-sm">View Details</a>
+                        <p class="mb-2"><strong>${featuredHeritageAsset.title || 'Explore our collection'}</strong></p>
+                        <a href="/digital-textailes-archieve/artifact/${featuredHeritageAsset.id || '1'}" class="btn btn-primary btn-sm">View Details</a>
                     </div>
                 </div>
             </div>
