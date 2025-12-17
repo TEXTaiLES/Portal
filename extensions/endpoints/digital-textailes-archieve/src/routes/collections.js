@@ -55,16 +55,16 @@ ${renderNavbar('collections')}
                 <!-- Login Form -->
                 <form id="loginForm" class="mt-4">
                     <div class="mb-3">
-                        <input type="email" class="form-control" id="email" placeholder="Email" required>
+                        <input type="email" class="form-control form-control-lg" id="email" placeholder="Email" required style="border-radius: 8px;">
                     </div>
                     <div class="mb-3">
-                        <input type="password" class="form-control" id="password" placeholder="Password" required>
+                        <input type="password" class="form-control form-control-lg" id="password" placeholder="Password" required style="border-radius: 8px;">
                     </div>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-lg w-100" style="background-color: #53909c; border: none; border-radius: 8px; color: white; font-weight: 500; padding: 12px; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#467d88'" onmouseout="this.style.backgroundColor='#53909c'">
                         <i class="fas fa-sign-in-alt"></i> Login
                     </button>
-                    <div id="loginError" class="alert alert-danger mt-3" style="display: none;"></div>
-                    <div id="loginSuccess" class="alert alert-success mt-3" style="display: none;">Login successful! Redirecting...</div>
+                    <div id="loginError" class="alert alert-danger mt-3" style="display: none; border-radius: 8px;"></div>
+                    <div id="loginSuccess" class="alert alert-success mt-3" style="display: none; border-radius: 8px;">Login successful! Redirecting...</div>
                 </form>
 
                 <script>
