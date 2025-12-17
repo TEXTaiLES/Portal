@@ -151,10 +151,84 @@ ${renderNavbar('collections')}
             </script>
 
             <div class="row mt-4">
+
+                <!-- Heritage Asset Section -->
+                <div class="col-12 mb-4">
+                    <h4 class="border-bottom pb-2">Heritage Asset</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl>
+                                <dt class="samewidth">Title:</dt>
+                                <dd>${costume.title || 'N/A'}</dd>
+                                
+                                <dt class="samewidth">Description:</dt>
+                                <dd>${costume.description || 'N/A'}</dd>
+                                
+                                <dt class="samewidth">Date - Timespan:</dt>
+                                <dd>${costume.date_timespan || 'N/A'}</dd>
+
+                                <dt class="samewidth">Dimensions:</dt>
+                                <dd>${costume.dimensions || 'N/A'}</dd>
+
+                                <dt class="samewidth">Heritage Asset Owner:</dt>
+                                <dd>${costume.heritage_asset_owner || 'N/A'}</dd>
+
+                                <dt class="samewidth">Category of Textile:</dt>
+                                <dd>${costume.category_of_textile || 'N/A'}</dd>
+
+                                <dt class="samewidth">Keywords:</dt>
+                                <dd>${costume.keywords || 'N/A'}</dd>
+
+                                <dt class="samewidth">Inventory Number:</dt>
+                                <dd>${costume.inventory_number || 'N/A'}</dd>
+
+                                <dt class="samewidth">Origin:</dt>
+                                <dd>${costume.origin || 'N/A'}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Digital Asset Section -->
+                <div class="col-12 mb-4">
+                    <h4 class="border-bottom pb-2">Digital Asset</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl>
+                                <dt class="samewidth">Digitization methods:</dt>
+                                <dd>${costume.digitization_methods || 'N/A'}</dd>
+                                
+                                <dt class="samewidth">Digitization Actor:</dt>
+                                <dd>${costume.digitization_actor || 'N/A'}</dd>
+                                
+                                <dt class="samewidth">Resolution:</dt>
+                                <dd>${costume.resolution || 'N/A'}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Information (toggle only) -->
+                <div class="col-12 mb-4">
+                    <div class="d-flex align-items-center justify-content-end border-bottom pb-2"
+                    role="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#additionalInfoCollapse"
+                    aria-expanded="false"
+                    aria-controls="additionalInfoCollapse">
+                    <div class="d-flex align-items-center">
+                        <h4 class="mb-0 fs-6"><em>Additional Information</em></h4>
+                        <i class="fas fa-chevron-down ms-1 rotate-on-open"></i>
+                    </div>
+                </div>
+
+                <!-- Collapsible content (everything hidden until click) -->
+                <div class="collapse mt-3" id="additionalInfoCollapse">
+
                 <!-- Identification Section -->
                 <div class="col-12 mb-4">
-                    <h4 class="border-bottom pb-2">Identification</h4>
-                    <div class="row">
+                        <h4 class="border-bottom pb-2">Identification</h4>
+                        <div class="row">
                         <div class="col-md-6">
                             <dl>
                                 <dt class="samewidth">Title:</dt>
@@ -177,7 +251,7 @@ ${renderNavbar('collections')}
                             </dl>
                         </div>
                     </div>
-                </div>
+                
 
                 <!-- Condition Section -->
                 <div class="col-12 mb-4">
@@ -288,6 +362,8 @@ ${renderNavbar('collections')}
                     </div>
                 </div>
             </div>
+                </div>
+                </div>
             
             <p class="mt-3"><a href="/digital-textailes-archieve/collections">← Back to Collections</a></p>
         </div>

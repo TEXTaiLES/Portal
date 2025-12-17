@@ -1,8 +1,14 @@
+<<<<<<< HEAD
 # Portal — Digital Textailes Archive (Directus integration)
 
 Portal is a web application developed as part of the TEXTaiLES toolbox. It provides a public 3D viewer and archive for cultural heritage artifacts, integrated with Directus as the content management and file-storage backend.
 
 This repository contains a Directus endpoint extension that serves a single-page viewer and static assets. The extension reads GLTF models and associated files from the Directus `directus_files` storage (the Directus uploads library) and streams them to the public viewer.
+=======
+# Portal to Digital Textailes Archive — Directus Endpoint Extension
+
+A public 3D artifact viewer extension for Directus. This endpoint serves a single-page viewer that loads 3D models (GLTF) from the Directus `directus_files` storage and a set of static assets (CSS/JS/images) shipped in the extension `static/Archieve_files` folder.
+>>>>>>> dfe588fe6a379b8692ebd0678ebd3570c11baf2d
 
 This extension lives at:
 
