@@ -8,6 +8,18 @@ export default (router, { services }) => {
 
 	router.get('/collections/:usecase?', async (req, res) => {
 		try {
+			// Check if user is authenticated via accountability or access_token query param
+			// Directus sets req.accountability when a valid auth token is present in headers or query
+			let isAuthenticated = req.accountability && req.accountability.user;
+			
+			console.log('Auth check:', {
+				hasAccountability: !!req.accountability,
+				hasUser: !!(req.accountability && req.accountability.user),
+				cookies: req.cookies,
+				authHeader: req.headers.authorization,
+				queryToken: req.query.access_token ? 'present' : 'missing'
+			});
+			
 			const rawParam = req.params.usecase;
 			const showCards = !rawParam;
 			
@@ -19,10 +31,118 @@ export default (router, { services }) => {
 				usecase = USE_CASE_MAP[useCaseNum] || usecase; // e.g., '1' -> '1. Textile Artifacts'
 			}
 
-    // Connects to Directus database
+			// If not authenticated, show login message
+			if (!isAuthenticated) {
+				const content = `
+${renderNavbar('collections')}
+
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <h1>Collections</h1>
+        <p>Explore Our Cultural Heritage Archives</p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <div class="alert alert-info" role="alert" style="max-width: 600px; margin: 0 auto;">
+                <i class="fas fa-lock fa-3x mb-3"></i>
+                <h4>Authentication Required</h4>
+                <p>Collections can be accessed with login</p>
+                
+                <!-- Login Form -->
+                <form id="loginForm" class="mt-4">
+                    <div class="mb-3">
+                        <input type="email" class="form-control" id="email" placeholder="Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" class="form-control" id="password" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <div id="loginError" class="alert alert-danger mt-3" style="display: none;"></div>
+                    <div id="loginSuccess" class="alert alert-success mt-3" style="display: none;">Login successful! Redirecting...</div>
+                </form>
+
+                <script>
+                    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const email = document.getElementById('email').value;
+                        const password = document.getElementById('password').value;
+                        const errorDiv = document.getElementById('loginError');
+                        const successDiv = document.getElementById('loginSuccess');
+                        
+                        errorDiv.style.display = 'none';
+                        successDiv.style.display = 'none';
+                        
+                        try {
+                            // Authenticate with Directus API
+                            const response = await fetch('http://localhost:8055/auth/login', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ email, password }),
+                                credentials: 'include'
+                            });
+                            
+                            if (response.ok) {
+                                const data = await response.json();
+                                // Check if we got an access token
+                                const token = data?.data?.access_token || data?.access_token;
+                                
+                                if (token) {
+                                    // Store token in sessionStorage and redirect with token as query param
+                                    sessionStorage.setItem('directus_token', token);
+                                    
+                                    successDiv.style.display = 'block';
+                                    // Redirect to same page with token to authenticate
+                                    setTimeout(() => {
+                                        window.location.href = '/digital-textailes-archieve/collections?access_token=' + token;
+                                    }, 1000);
+                                } else {
+                                    errorDiv.textContent = 'Authentication succeeded but no access token was returned';
+                                    errorDiv.style.display = 'block';
+                                }
+                            } else {
+                                const data = await response.json();
+                                errorDiv.textContent = data.errors?.[0]?.message || 'Invalid username or password';
+                                errorDiv.style.display = 'block';
+                            }
+                        } catch (error) {
+                            errorDiv.textContent = 'Error connecting to Directus: ' + error.message;
+                            errorDiv.style.display = 'block';
+                        }
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+
+${renderFooter()}`;
+
+				const html = renderHtmlPage({
+					title: 'Collections - Digital Textailes Archive',
+					content,
+					includeModelViewer: false,
+					cspPolicy: CSP_POLICY
+				});
+
+				res.set('Content-Type', 'text/html');
+				res.set('Content-Security-Policy', CSP_POLICY);
+				return res.send(html);
+			}
+
+    // Get access token from query to pass to links
+	const accessToken = req.query.access_token || '';
+	const tokenParam = accessToken ? `?access_token=${accessToken}` : '';
+
+	// Connects to Directus database
 	const heritageAssetsService = new ItemsService('heritage_assets', {
 		schema: req.schema,
-		accountability: null,
+		accountability: req.accountability,
 	});
 
 	// Fetches all heritage assets from database
@@ -44,7 +164,7 @@ export default (router, { services }) => {
 	const heritageAssetsHtml = filteredHeritageAssets.length
 				? filteredHeritageAssets.map(c => `
 					<div class="col-md-4 col-sm-6 mb-4">
-						<a href="/digital-textailes-archieve/artifact/${c.id}" class="text-decoration-none">
+						<a href="/digital-textailes-archieve/artifact/${c.id}${tokenParam}" class="text-decoration-none">
 							<div class="card h-100">
 								<div style="height: 200px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
 									${c.gltf_file || c.obj_file ? `<model-viewer 
@@ -76,9 +196,10 @@ const allItemsHtml = heritageAssetsHtml
 const useCaseMenu = USE_CASES.map(uc => {
 				const isActive = uc.key === usecase.toLowerCase();
 				const useCaseNumber = uc.key.match(/^(\d+)\./)?.[1];
-				const url = uc.key === 'all' 
+				const baseUrl = uc.key === 'all' 
 					? '/digital-textailes-archieve/collections/all-use-cases' 
 					: `/digital-textailes-archieve/collections/use-case-${useCaseNumber}`;
+				const url = baseUrl + tokenParam;
 				
 			const count = uc.key === 'all' 
 				? allHeritageAssets.length
@@ -123,7 +244,7 @@ ${renderNavbar('collections')}
 				<div class="row mt-4">
 					${allItemsHtml}
 				</div>
-				<p class="mt-3"><a href="/digital-textailes-archieve/collections">← Back to Collections</a></p>
+				<p class="mt-3"><a href="/digital-textailes-archieve/collections${tokenParam}">← Back to Collections</a></p>
 			`}
 		</div>
     </div>
